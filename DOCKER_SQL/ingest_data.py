@@ -3,6 +3,10 @@ import os
 import pandas as pd
 from sqlalchemy import create_engine
 
+# function to split dataframe into chunks (for batch sql insertion)
+def chunker(seq, size):
+    return (seq[pos:pos + size] for pos in range(0, len(seq), size))
+
 def main(params):
     # parse params
     user = params.user
@@ -32,11 +36,8 @@ def main(params):
     data.head(n=0).to_sql(name = table_name, con = engine, if_exists = 'replace')
 
     # upload data
-    data.head(n=100).to_sql(name = table_name, con = engine, if_exists = 'append')
-
-    # example of how to query the data from python
-    # query = "select * from yellow_taxi_data limit 10;"
-    # pd.read_sql(query, con = engine)
+    for chunk in chunker(data, 10000):
+        chunk.to_sql(name = table_name, con = engine, if_exists = 'append')
 
 if __name__ == '__main__':
     # instantiate parser
