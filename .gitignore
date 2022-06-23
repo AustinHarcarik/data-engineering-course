@@ -36,3 +36,6 @@ DOCKER_SQL/.ipynb_checkpoints
 
 # parquet files
 *.parquet
+
+# csv files
+*.csv
