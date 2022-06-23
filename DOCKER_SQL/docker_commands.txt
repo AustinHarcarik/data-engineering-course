@@ -22,15 +22,17 @@ docker run -it \
     dpage/pgadmin4
 
 # run ingest data locally
-URL="https://s3.amazonaws.com/nyc-tlc/trip+data/yellow_tripdata_2021-01.parquet"
+URL="https://s3.amazonaws.com/nyc-tlc/trip+data/yellow_tripdata_2021-01.parquet" 
+URL="https://s3.amazonaws.com/nyc-tlc/misc/taxi+_zone_lookup.csv"
 python ingest_data.py \
     --user=root \
     --password=root \
     --host=localhost \
     --port=5432 \
     --db=ny_taxi \
-    --table_name=yellow_taxi_data \
-    --url=${URL}
+    --table_name=zones \
+    --url=${URL} \
+    --file_name=output.csv
 
 # build ingest data container
 docker build -t taxi_ingest . 
@@ -45,4 +47,9 @@ docker run -it \
         --port=5432 \
         --db=ny_taxi \
         --table_name=yellow_taxi_data \
-        --url=${URL}
+        --url=${URL} \
+        --file_name=output.parquet
+
+# docker compose
+docker-compose up
+docker-compose down

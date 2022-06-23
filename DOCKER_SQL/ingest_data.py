@@ -16,14 +16,17 @@ def main(params):
     db = params.db
     table_name = params.table_name
     url = params.url
-    parquet_name = 'output.parquet'
+    file_name = params.file_name
 
     # download the parquet
-    os.system(f'wget {url} -O {parquet_name}')
+    os.system(f'wget {url} -O {file_name}')
 
     # read in data
-    data = pd.read_parquet(parquet_name)
-    print(f'number of rows read in from parquet file:{len(data)}')
+    if 'parquet' in file_name: 
+        data = pd.read_parquet(file_name)
+    else: 
+        data = pd.read_csv(file_name)
+    print(f'number of rows read in from file:{len(data)}')
 
     # create connection engine
     engine = create_engine(f'postgresql://{user}:{password}@{host}:{port}/{db}')
@@ -40,7 +43,6 @@ def main(params):
         chunk.to_sql(name = table_name, con = engine, if_exists = 'append')
 
 if __name__ == '__main__':
-    # instantiate parser
     parser = argparse.ArgumentParser(description = 'ingest parquet data to postgres')
 
     parser.add_argument('--user', help = 'user name for postgres')
@@ -49,7 +51,8 @@ if __name__ == '__main__':
     parser.add_argument('--port', help = 'port for postgres')
     parser.add_argument('--db', help = 'database name for postgres')
     parser.add_argument('--table_name', help = 'name of the table to write results to')
-    parser.add_argument('--url', help = 'url of the parquet file')
+    parser.add_argument('--url', help = 'url of the file to ingest')
+    parser.add_argument('--file_name', help = 'name of the file to write to')
 
     args = parser.parse_args()
 
