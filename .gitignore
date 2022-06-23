@@ -39,3 +39,9 @@ DOCKER_SQL/.ipynb_checkpoints
 
 # csv files
 *.csv
+
+# terraform 
+terraform
+
+# json files
+*.json
