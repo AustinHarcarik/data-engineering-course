@@ -45,3 +45,6 @@ terraform
 
 # json files
 *.json
+
+# environment variables
+*.env
