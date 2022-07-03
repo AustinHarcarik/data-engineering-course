@@ -13,6 +13,12 @@ PROJECT_ID = os.environ.get("GCP_PROJECT_ID")
 BUCKET = os.environ.get("GCP_GCS_BUCKET")
 AIRFLOW_HOME = os.environ.get("AIRFLOW_HOME", "/opt/airflow/")
 
+default_args = {
+    "owner": "airflow",
+    "depends_on_past": False,
+    "retries": 1,
+}
+
 def upload_to_gcs(bucket, object_name, local_file):
     if 'parquet' not in local_file: 
         table = pv.read_csv(local_file)
@@ -23,13 +29,6 @@ def upload_to_gcs(bucket, object_name, local_file):
     bucket = client.bucket(bucket)
     blob = bucket.blob(object_name)
     blob.upload_from_filename(local_file)
-
-default_args = {
-    "owner": "airflow",
-    #"start_date": days_ago(1),
-    "depends_on_past": False,
-    "retries": 1,
-}
 
 def donwload_upload_dag(
     dag,
@@ -69,6 +68,7 @@ yellow_taxi_data_dag = DAG(
     dag_id="yellow_taxi_data_v2",
     schedule_interval="0 6 2 * *",
     start_date=datetime(2019, 1, 1),
+    end_date=datetime(2021, 12, 1),
     default_args=default_args,
     catchup=True,
     max_active_runs=3,
@@ -90,6 +90,7 @@ green_taxi_data_dag = DAG(
     dag_id="green_taxi_data_v1",
     schedule_interval="0 7 2 * *",
     start_date=datetime(2019, 1, 1),
+    end_date=datetime(2021, 12, 1),
     default_args=default_args,
     catchup=True,
     max_active_runs=3,
@@ -111,7 +112,7 @@ fhv_taxi_data_dag = DAG(
     dag_id="hfv_taxi_data_v1",
     schedule_interval="0 8 2 * *",
     start_date=datetime(2019, 1, 1),
-    end_date=datetime(2020, 1, 1),
+    end_date=datetime(2021, 12, 1),
     default_args=default_args,
     catchup=True,
     max_active_runs=3,
